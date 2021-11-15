@@ -10,14 +10,6 @@ import sys
 from QC.utils import shell_do, rm_tmps, count_file_lines
 
 
-################ Misc methods ####################
-
-def get_size(geno_path):
-    fam_df = pd.read_csv(f'{geno_path}.fam', sep='\s+', header=None)
-    n = fam_df.shape[0]
-
-    return n
-
 ################ Sample pruning methods ####################
 def callrate_prune(geno_path, out_path, mind=0.02):
     

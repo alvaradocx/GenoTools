@@ -24,7 +24,8 @@ ref_labels = args.ref_labels
 out_path = args.out
 
 #sample size
-n = get_size(geno_path)
+fam_df = pd.read_csv(f'{geno_path}.fam', sep='\s+', header=None)
+n = fam_df.shape[0]
 
 # sample-level pruning and metrics
 missing_path = f'{geno_path}_missing'
@@ -60,7 +61,7 @@ for geno, label in zip(cohort_split['paths'], cohort_split['labels']):
 
     # related
     related_out = f'{geno}_related'
-    related = related_prune(geno, related_out, prune_related=False, n)
+    related = related_prune(geno, related_out,n, prune_related=False)
     related_dict[label] = related
     
     # het
