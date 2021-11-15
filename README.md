@@ -6,7 +6,7 @@ GenoTools is a suite of automated genotype data processing steps written in Pyth
 
 Setup just requires:
 ```
-git clone https://github.com/dvitale199/GenoTools
+git clone https://github.com/alvaradocx/GenoTools  # only using for myself not for others 
 cd GenoTools
 pip install .
 ```
