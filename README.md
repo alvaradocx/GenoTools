@@ -8,7 +8,7 @@ Setup just requires:
 ```
 git clone https://github.com/alvaradocx/GenoTools  # only using for myself not for others 
 cd GenoTools
-pip install .
+pip install -r requirements.txt
 ```
 
 The core pipeline can be called as:
