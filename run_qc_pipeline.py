@@ -2,6 +2,7 @@ import pandas as pd
 import argparse
 import shutil
 import os
+import subprocess
 
 # local imports
 from QC.qc import callrate_prune, het_prune, sex_prune, related_prune, variant_prune, avg_miss_rates
@@ -21,6 +22,10 @@ geno_path = args.geno
 ref_panel = args.ref
 ref_labels = args.ref_labels
 out_path = args.out
+
+#sample size
+size_cmd = 'wc -l {geno_path}.fam' # extract number of individuals
+n = subprocess.run(size_cmd, stdout=subprocess.PIPE)
 
 # sample-level pruning and metrics
 missing_path = f'{geno_path}_missing'
@@ -56,7 +61,7 @@ for geno, label in zip(cohort_split['paths'], cohort_split['labels']):
 
     # related
     related_out = f'{geno}_related'
-    related = related_prune(geno, related_out, prune_related=False)
+    related = related_prune(geno, related_out, prune_related=False, n)
     related_dict[label] = related
     
     # het
