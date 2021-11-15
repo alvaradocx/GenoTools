@@ -7,10 +7,14 @@ import os
 import shutil
 import pandas as pd
 
-def shell_do(command, log=False, return_log=False):
+def shell_do(command, log=False, return_log=False, split = True):
     print(f'Executing: {(" ").join(command.split())}', file=sys.stderr)
 
-    res=subprocess.run(command, stdout=subprocess.PIPE)
+    if split == True:
+    res = subprocess.run(command.split(), stdout=subprocess.PIPE)
+    else:
+    res = subprocess.run(command, stdout=subprocess.PIPE)
+
 
     if log:
         print(res.stdout.decode('utf-8'))
