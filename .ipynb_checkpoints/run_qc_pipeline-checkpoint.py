@@ -24,7 +24,7 @@ ref_labels = args.ref_labels
 out_path = args.out
 
 #sample size
-size_cmd = f'wc -l {geno_path}.fam' # extract number of individuals
+size_cmd = 'wc -l {geno_path}.fam' # extract number of individuals
 n = subprocess.run(size_cmd, stdout=subprocess.PIPE)
 
 # sample-level pruning and metrics
