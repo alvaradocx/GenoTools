@@ -11,9 +11,9 @@ def shell_do(command, log=False, return_log=False, split = True):
     print(f'Executing: {(" ").join(command.split())}', file=sys.stderr)
 
     if split == True:
-    res = subprocess.run(command.split(), stdout=subprocess.PIPE)
+        res = subprocess.run(command.split(), stdout=subprocess.PIPE)
     else:
-    res = subprocess.run(command, stdout=subprocess.PIPE)
+        res = subprocess.run(command, stdout=subprocess.PIPE)
 
 
     if log:
