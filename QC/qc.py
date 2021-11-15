@@ -11,7 +11,7 @@ from QC.utils import shell_do, rm_tmps, count_file_lines
 
 
 ################ Sample pruning methods ####################
-def callrate_prune(geno_path, out_path, mind=0.02):
+def callrate_prune(geno_path, out_path, mind=0.05):
     
     # what step are we running?
     step = "callrate_prune"
