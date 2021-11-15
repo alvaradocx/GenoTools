@@ -216,7 +216,7 @@ def het_prune(geno_path, out_path):
     return out_dict
 
 
-def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_cutoff=0.95, prune_related=True, prune_duplicated=True):
+def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_cutoff=0.95, prune_related=True, prune_duplicated=True, n = 200000, buffer = 2):
     
     # what step are we running?
     step = "related_prune"
@@ -232,30 +232,98 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     grm2 = f"{out_path}_unrelated_grm"
     grm3 = f"{out_path}_duplicated_grm"
     
-    # calculate grm and select relatedness <= grm_cutoff
-    gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm --out {grm1}" 
-    # see if any samples are related (includes duplicates)
-    gcta_cmd2 = f"gcta --grm {grm1} --grm-cutoff {related_grm_cutoff} --make-grm --out {grm2}"
-    # see if any samples are duplicated (grm cutoff >= 0.95)
-    gcta_cmd3 = f"gcta --grm {grm1} --grm-cutoff {duplicated_grm_cutoff} --make-grm --out {grm3}"
-    
-    
-    if prune_related and prune_duplicated:
-        plink_cmd1 = f"plink --bfile {geno_path} --keep {grm2}.grm.id --make-bed --out {out_path}"
+    if n >= 200000:
         
-    if prune_duplicated and not prune_related:
-        plink_cmd1 = f"plink --bfile {geno_path} --keep {grm3}.grm.id --make-bed --out {out_path}"
+        # calculate total estimated memory needed and parts
+        max_mem = 1167  # max memory based off of gcta ukbiobank example using 456,426 individuals with extra gb allocation
+        mem = ((n * (n + 1) / 2 * 12) / 1024**3 + 0.5) + buffer # gcta estimated memory formula; output = GB where buffer is allocating extra gb
+            if mem <= max_mem:
+                part = 250 #mb per part
+            else:
+                mem = mem * 1024
+                part = mem / 6700 # 6700MB per part based on gcta example   
+        
+        # create commands for merging parts together
+        grms = ['grm.id', 'grm.bin', 'grm.N.bin']
+        grm1_cat = ''
+        grm2_cat = ''
+        grm3_cat = ''
     
-    if not prune_related and not prune_duplicated:
-        plink_cmd1 = f'echo prune_related and prune_duplicated set to False. Pruning passed'
+        # calculate grm and select relatedness <= grm_cutoff
+        gcta_cmd1 = ''
+            for i in range(1,251):
+                gcta_cmd1 += "; gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3}".format(geno_path,part, i, grm1)
+        gcta_cmd1 = gcta_cmd1[2:]
     
-    if not prune_duplicated and prune_related:
-        print('This option is invalid. Cannot prune related without also pruning duplicated')
+        # merge
+        for grm in grms:
+            grm1_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm1,part,grm)
+            grm1_cat = grm1_cat[2:]
+    
+        # see if any samples are related (includes duplicates)
+        gcta_cmd2 = ''
+            for i in range(1,251):
+                gcta_cmd2 += "; gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1, related_grm_cutoff,part, i, grm2)
+        gcta_cmd2 = gcta_cmd2[2:]
+    
+        # merge
+        for grm in grms:
+            grm2_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm2,part,grm)
+            grm2_cat = grm2_cat[2:]
+    
+        # see if any samples are duplicated (grm cutoff >= 0.95)
+        gcta_cmd3 = ''
+            for i in range(1,251):
+                gcta_cmd3 += "; gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,duplicated_grm_cutoff, part, i, grm3)
+        gcta_cmd3 = gcta_cmd3[2:]
+    
+        # merge
+        for grm in grms:
+            grm3_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm3,part,grm)
+            grm3_cat = grm3_cat[2:]
+        
+    
+        if prune_related and prune_duplicated:
+            plink_cmd1 = f"plink --bfile {geno_path} --keep {grm2}.grm.id --make-bed --out {out_path}"
+        
+        if prune_duplicated and not prune_related:
+            plink_cmd1 = f"plink --bfile {geno_path} --keep {grm3}.grm.id --make-bed --out {out_path}"
+    
+        if not prune_related and not prune_duplicated:
+            plink_cmd1 = f'echo prune_related and prune_duplicated set to False. Pruning passed'
+    
+        if not prune_duplicated and prune_related:
+            print('This option is invalid. Cannot prune related without also pruning duplicated')
     
 
-    cmds = [gcta_cmd1, gcta_cmd2, gcta_cmd3, plink_cmd1]
-    for cmd in cmds:
-        shell_do(cmd)
+        cmds = [gcta_cmd1, grm1_cat, gcta_cmd2, grm2_cat, gcta_cmd3, grm3_cat, plink_cmd1]
+        for cmd in cmds:
+            shell_do(cmd)
+    else:
+         # calculate grm and select relatedness <= grm_cutoff
+        gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm-part  --out {grm1}" 
+        # see if any samples are related (includes duplicates)
+        gcta_cmd2 = f"gcta --grm {grm1} --grm-cutoff {related_grm_cutoff} --make-grm --out {grm2}"
+        # see if any samples are duplicated (grm cutoff >= 0.95)
+        gcta_cmd3 = f"gcta --grm {grm1} --grm-cutoff {duplicated_grm_cutoff} --make-grm --out {grm3}"
+    
+    
+        if prune_related and prune_duplicated:
+            plink_cmd1 = f"plink --bfile {geno_path} --keep {grm2}.grm.id --make-bed --out {out_path}"
+        
+        if prune_duplicated and not prune_related:
+            plink_cmd1 = f"plink --bfile {geno_path} --keep {grm3}.grm.id --make-bed --out {out_path}"
+    
+        if not prune_related and not prune_duplicated:
+            plink_cmd1 = f'echo prune_related and prune_duplicated set to False. Pruning passed'
+    
+        if not prune_duplicated and prune_related:
+            print('This option is invalid. Cannot prune related without also pruning duplicated')
+    
+
+        cmds = [gcta_cmd1, gcta_cmd2, gcta_cmd3, plink_cmd1]
+        for cmd in cmds:
+            shell_do(cmd)
     
     
     # get sample counts
@@ -324,7 +392,6 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     }
 
     return out_dict
-
     
 
 ################ Variant pruning methods ####################
