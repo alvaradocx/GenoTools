@@ -10,6 +10,8 @@ git clone https://github.com/alvaradocx/GenoTools  # only using for myself not f
 cd GenoTools
 pip install -r requirements.txt # full listing
 pip install -r min_req.txt # minimal libraries avoids conflict with cupy installation
+
+pip install git+https://github.com/alvaradocx/GenoTools
 ```
 
 The core pipeline can be called as:
