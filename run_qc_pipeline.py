@@ -61,7 +61,7 @@ for geno, label in zip(cohort_split['paths'], cohort_split['labels']):
 
     # related
     related_out = f'{geno}_related'
-    related = related_prune(geno, related_out,n, prune_related=False)
+    related = related_prune(geno, related_out, n = n, prune_related=False)
     related_dict[label] = related
     
     # het
