@@ -257,7 +257,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     
         # merge
         for grm in grms:
-            grm1_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm1,part,grm)
+            grm1_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2} > {0}.{2}".format(0 = grm1, 1 = part, 2 = grm)
             grm1_cat = grm1_cat[2:]
     
         # see if any samples are related (includes duplicates)
@@ -268,7 +268,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     
         # merge
         for grm in grms:
-            grm2_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm2,part,grm)
+            grm2_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2} > {0}.{2}".format(0 = grm2, 1 = part, 2 = grm)
             grm2_cat = grm2_cat[2:]
     
         # see if any samples are duplicated (grm cutoff >= 0.95)
@@ -279,7 +279,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     
         # merge
         for grm in grms:
-            grm3_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2}".format(grm3,part,grm)
+            grm3_cat += "; cat {0}.part_{1}_*.{2} > {0}.{2} > {0}.{2}".format(0 = grm3, 1 = part, 2 = grm)
             grm3_cat = grm3_cat[2:]
         
     
