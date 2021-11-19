@@ -257,7 +257,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     
         # merge
         for grm in grms:
-            grm1_cat += "; cat {}.part_{}_*.{} > {}.{} ".format(grm1, part, grm, grm1, grm)
+            grm1_cat += "; cat {}.part_{}_*.{} > {}.{}".format(grm1, part, grm, grm1, grm)
             grm1_cat = grm1_cat[2:]
     
         # see if any samples are related (includes duplicates)
@@ -268,7 +268,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     
         # merge
         for grm in grms:
-            grm2_cat += "; cat {}.part_{}_*.{} > {}.{} ".format(grm2, part, grm, grm2, grm)
+            grm2_cat += "; cat {}.part_{}_*.{} > {}.{}".format(grm2, part, grm, grm2, grm)
             grm2_cat = grm2_cat[2:]
     
         # see if any samples are duplicated (grm cutoff >= 0.95)
@@ -298,7 +298,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         cmds = [gcta_cmd1, grm1_cat, gcta_cmd2, grm2_cat, gcta_cmd3, grm3_cat, plink_cmd1]
         for cmd in cmds:
-            shell_do(cmd)
+            shell_do(cmd, split = False)
     else:
          # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm-part  --out {grm1}" 
