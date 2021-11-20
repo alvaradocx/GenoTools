@@ -515,7 +515,11 @@ plink --bfile {geno_path} \
         'paths': outfiles
     }
 
-    output_dict.to_csv(outname, index=False, header=False, sep='\t')
+    with open(f'{outname}.csv', 'wb') as f:
+        w = csv.writer(f)
+        w.writerow(output_dict.keys())
+        w.writerow(output_dict.values())
+
     return output_dict
 
 
@@ -652,6 +656,9 @@ def run_ancestry(geno_path, out_path, ref_panel, ref_labels, train_param_grid=No
         'output': outfiles_dict
     }
 
-    out_dict.to_csv('return_ancestry.csv', index=False, header=False, sep='\t')
+    with open('return_ancestry.csv', 'wb') as f:
+        w = csv.writer(f)
+        w.writerow(output_dict.keys())
+        w.writerow(output_dict.values())
 
     return out_dict

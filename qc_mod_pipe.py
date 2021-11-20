@@ -31,7 +31,6 @@ n = fam_df.shape[0]
 
 # sample-level pruning and metrics
 missing_path = f'{geno_path}_missing'
-# avg_miss
 
 #callrate
 callrate_out = f'{geno_path}_callrate'
