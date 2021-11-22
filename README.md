@@ -8,10 +8,18 @@ Setup just requires:
 ```
 git clone https://github.com/alvaradocx/GenoTools  # only using for myself not for others 
 cd GenoTools
+pip install . 
+
+# pick one of the following
 pip install -r requirements.txt # full listing
 pip install -r min_req.txt # minimal libraries avoids conflict with cupy installation
+```
 
-pip install git+https://github.com/alvaradocx/GenoTools
+Any updates can be applied using the following commands
+```
+cd GenoTools
+git pull https://github.com/alvaradocx/GenoTools  # will only update local files but not the local python package
+pip install . -U # will update local python package
 ```
 
 The core pipeline can be called as:
