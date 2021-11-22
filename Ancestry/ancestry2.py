@@ -16,6 +16,8 @@ from sklearn.svm import LinearSVC
 import plotly.express as px
 import plotly
 import joblib
+import csv
+import json
 
 # local imports
 from QC.utils import shell_do, get_common_snps, rm_tmps
@@ -520,6 +522,10 @@ plink --bfile {geno_path} \
         w.writerow(output_dict.keys())
         w.writerow(output_dict.values())
 
+    # backup
+    with open(f'{outname}.txt', 'w') as file:
+        file.write(json.dumps(output_dict))
+
     return output_dict
 
 
@@ -660,5 +666,9 @@ def run_ancestry(geno_path, out_path, ref_panel, ref_labels, train_param_grid=No
         w = csv.writer(f)
         w.writerow(output_dict.keys())
         w.writerow(output_dict.values())
+
+    #backup
+    with open('return_ancestry.txt', 'w') as file:
+        file.write(json.dumps(output_dict))
 
     return out_dict
