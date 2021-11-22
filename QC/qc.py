@@ -241,12 +241,11 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
             part = int(mem / 6700)  # 6700MB per part based on gcta example
 
         # calculate grm and select relatedness <= grm_cutoff
-        gcta_cmd1 = ''
+        gcta_cmd1 = []
         for i in range(1, part + 1):
-            gcta_cmd1 += "; gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3}".format(geno_path,
+            gcta_cmd1.append("gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3}".format(geno_path,
                                                                                                              part, i,
-                                                                                                             grm1)
-        gcta_cmd1 = gcta_cmd1[2:]
+                                                                                                             grm1))
 
         # merge
         grm1_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm1, part, grm1)
@@ -254,12 +253,11 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         grm1_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm1, part, grm1)
 
         # see if any samples are related (includes duplicates)
-        gcta_cmd2 = ''
+        gcta_cmd2 = []
         for i in range(1, part + 1):
-            gcta_cmd2 += "; gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
+            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
                                                                                                       related_grm_cutoff,
-                                                                                                      part, i, grm2)
-        gcta_cmd2 = gcta_cmd2[2:]
+                                                                                                      part, i, grm2))
 
         # merge
         grm2_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm2, part, grm2)
@@ -267,12 +265,11 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         grm2_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm2, part, grm2)
 
         # see if any samples are duplicated (grm cutoff >= 0.95)
-        gcta_cmd3 = ''
+        gcta_cmd3 = []
         for i in range(1, part + 1):
-            gcta_cmd3 += "; gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
+            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
                                                                                                       duplicated_grm_cutoff,
-                                                                                                      part, i, grm3)
-        gcta_cmd3 = gcta_cmd3[2:]
+                                                                                                      part, i, grm3))
 
         # merge
         grm3_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm3, part, grm3)
@@ -293,8 +290,14 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         cmds = [gcta_cmd1, grm1_id, grm1_bin, grm1_nbin, gcta_cmd2, grm2_id, grm2_bin, grm2_nbin, gcta_cmd3, grm3_id,
                 grm3_bin, grm3_nbin, plink_cmd1]
-        for cmd in cmds:
-            shell_do(cmd, make_part=True)
+        cmd_len = len(cmds)
+
+        for i in range(0,cmd_len):
+            if isinstance(cmds[i], str):
+                shell_do(cmd, make_part=True)
+            else:
+                for sub in cmds[i]:
+                    shell_do(sub, make_part=True)
     else:
         # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm  --out {grm1}"
