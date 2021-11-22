@@ -38,10 +38,7 @@ callrate_out = f'{geno_path}_callrate'
 #sex_out
 sex_out = f'{callrate_out}_sex'
 
-# run ancestry methods
-ancestry_out = f'{sex_out}_ancestry'
-
-
+# load in
 cohort_split = f'{geno_path}_callrate_sex_ancestry'
 
 # ancestry-specific pruning steps

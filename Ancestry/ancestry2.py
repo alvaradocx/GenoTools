@@ -517,13 +517,13 @@ plink --bfile {geno_path} \
         'paths': outfiles
     }
 
-    with open(f'{outname}.csv', 'wb') as f:
+    with open(f'split_cohort.csv', 'wb') as f:
         w = csv.writer(f)
         w.writerow(output_dict.keys())
         w.writerow(output_dict.values())
 
     # backup
-    with open(f'{outname}.txt', 'w') as file:
+    with open(f'split_cohort.txt', 'w') as file:
         file.write(json.dumps(output_dict))
 
     return output_dict
