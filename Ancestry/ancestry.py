@@ -4,7 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
-from matplotlib import cm 
+from matplotlib import cm
 import numpy as np
 import os
 import shutil
@@ -17,23 +17,23 @@ import plotly.express as px
 import plotly
 import joblib
 
-#local imports
+# local imports
 from QC.utils import shell_do, get_common_snps, rm_tmps
 
 
 def ancestry_prune(geno_path, out_path=None):
-    '''Pruning of --maf 0.05, --geno 0.01, --hwe 0.0001, palindrome snps, and high-LD regions for ancestry methods.
-    
-    Parameters: 
+    """Pruning of --maf 0.05, --geno 0.01, --hwe 0.0001, palindrome snps, and high-LD regions for ancestry methods.
+
+    Parameters:
     geno_path (string): path to plink genotype (everything before .bed/.bim/.fam).
     out_path (string): path to output plink genotype (everything before .bed/.bim/.fam).
-    
+
     Returns:
     None.
-    '''
+    """
 
     geno_ancestry_prune_tmp = f'{geno_path}_ancestry_prune_tmp'
-    
+
     if out_path:
         geno_ancestry_prune_out = out_path
     else:
@@ -44,7 +44,10 @@ def ancestry_prune(geno_path, out_path=None):
 
     # find and drop palindromes in geno_path .bim file
     geno_bim.columns = ['chr', 'rsid', 'kb', 'pos', 'a1', 'a2']
-    palindromes = geno_bim.loc[((geno_bim.a1 == 'A') & (geno_bim.a2 == 'T')) | ((geno_bim.a1 == 'T') & (geno_bim.a2 == 'A')) | ((geno_bim.a1 == 'C') & (geno_bim.a2 == 'G')) | ((geno_bim.a1 == 'G') & (geno_bim.a2 == 'C'))]
+    palindromes = geno_bim.loc[((geno_bim.a1 == 'A') & (geno_bim.a2 == 'T')) |
+                               ((geno_bim.a1 == 'T') & (geno_bim.a2 == 'A')) |
+                               ((geno_bim.a1 == 'C') & (geno_bim.a2 == 'G')) |
+                               ((geno_bim.a1 == 'G') & (geno_bim.a2 == 'C'))]
     palindromes['rsid'].to_csv(f'{geno_path}_palindromes.snplist', header=False, index=False, sep='\t')
 
     plink_cmd1 = f'plink --bfile {geno_path}\
@@ -55,7 +58,7 @@ def ancestry_prune(geno_path, out_path=None):
      --allow-no-sex\
      --exclude {geno_path}_palindromes.snplist\
      --make-bed\
-     --out {geno_ancestry_prune_tmp}' 
+     --out {geno_ancestry_prune_tmp}'
 
     # exclude high-LD regions
     plink_cmd2 = f'plink --bfile {geno_ancestry_prune_tmp}\
@@ -69,12 +72,11 @@ def ancestry_prune(geno_path, out_path=None):
 
     for cmd in cmds:
         shell_do(cmd)
-    
-    rm_tmps([f'{geno_ancestry_prune_tmp}'], ['bed','bim','fam','log'])
 
-        
+    rm_tmps([f'{geno_ancestry_prune_tmp}'], ['bed', 'bim', 'fam', 'log'])
+
+
 def flash_pca(geno_path, out_name, dim=20):
-
     """Runs flashpca on input genotype.
 
     Parameters:
@@ -94,36 +96,34 @@ def flash_pca(geno_path, out_name, dim=20):
      --outpve {out_name}.pve\
      --outload {out_name}.loadings\
      --outmeansd {out_name}.meansd'
-    
+
     shell_do(flashpca_cmd)
 
     out_dict = {
-        'outpc':f'{out_name}.pcs',
+        'outpc': f'{out_name}.pcs',
         'outvec': f'{out_name}.vec',
         'outval': f'{out_name}.val',
         'outpve': f'{out_name}.pve',
         'outload': f'{out_name}.loadings',
         'outmeansd': f'{out_name}.meansd'
-        }
-        
+    }
+
     return out_dict
 
 
-    
 def pca_projection(geno_path, inmeansd, inload, outproj):
-    
-    '''Project new samples on to PCs in flashpca format. Must use the EXACT same snps (use get_common_snps() below).
+    """Project new samples on to PCs in flashpca format. Must use the EXACT same snps (use get_common_snps() below).
 
     Parameters:
     geno_path (string): path to plink genotype (everything before .bed/.bim/.fam).
     inmeansd (string): path to flashpca meansd file
     inload (string): path to flashpca loadings file
     outproj (string): path to output projected samples
-    
+
     Returns:
     dict: paths to output files
-    '''
-    
+    """
+
     project_geno_pcs_cmd = f'\
     flashpca --bfile {geno_path}\
      --project\
@@ -135,17 +135,18 @@ def pca_projection(geno_path, inmeansd, inload, outproj):
     shell_do(project_geno_pcs_cmd)
 
     out_dict = {
-        'outpc':f'{outproj}.pcs',
+        'outpc': f'{outproj}.pcs',
         'outvec': f'{outproj}.vec',
         'outval': f'{outproj}.val',
         'outload': f'{outproj}.loadings',
-        }
+    }
     return out_dict
 
 
-def plot_3d(labeled_df, color, symbol=None, plot_out=None, x='PC1', y='PC2', z='PC3', title=None, x_range=None, y_range=None, z_range=None):
-    '''
-    Parameters: 
+def plot_3d(labeled_df, color, symbol=None, plot_out=None, x='PC1', y='PC2', z='PC3', title=None, x_range=None,
+            y_range=None, z_range=None):
+    """
+    Parameters:
     labeled_df (Pandas dataframe): labeled ancestry dataframe
     color (string): color of ancestry label. column name containing labels for ancestry in labeled_pcs_df
     symbol (string): symbol of secondary label (for example, predicted vs reference ancestry). default: None
@@ -159,9 +160,10 @@ def plot_3d(labeled_df, color, symbol=None, plot_out=None, x='PC1', y='PC2', z='
     z_range (list of floats [min, max], optional): range for z-axis
 
     Returns:
-    3-D scatterplot (plotly.express.scatter_3d). If plot_out included, will write .png static image and .html interactive to plot_out filename
-        
-    '''    
+    3-D scatterplot (plotly.express.scatter_3d).
+    If plot_out included, will write .png static image and .html interactive to plot_out filename
+
+    """
     fig = px.scatter_3d(
         labeled_df,
         x=x,
@@ -184,8 +186,7 @@ def plot_3d(labeled_df, color, symbol=None, plot_out=None, x='PC1', y='PC2', z='
 
 
 def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
-
-    '''Calculate Principal Components for reference (.bed/.bim/.fam) and project new samples. Plot PCs.
+    """Calculate Principal Components for reference (.bed/.bim/.fam) and project new samples. Plot PCs.
 
     Parameters:
     geno (string): path to plink genotype (everything before .bed/.bim/.fam).
@@ -193,7 +194,7 @@ def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
     labels (string): path to tab-separated file containing labels (FID,IID,label)
     plotdir (string): path to directory where plots will be written to
     keep_temp (boolean): Default=True. if false, delete intermediate files
-    
+
     Returns:
     out_dict = {
         'labeled_ref_pca': labeled reference pca df (pandas dataframe),
@@ -201,7 +202,7 @@ def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
         'outpaths': paths to output files (dictionary of strings),
         'temp_paths': paths to temp files (dictionary of strings)
         }
-    '''
+    """
 
     step = "calculate_pcs"
     print()
@@ -230,16 +231,15 @@ def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
     out_paths = {**out_paths, **ref_pca}
 
     # read ancestry file with reference labels 
-    ancestry = pd.read_csv(f'{labels}', sep='\t', header=None, names=['FID','IID','label'])
+    ancestry = pd.read_csv(f'{labels}', sep='\t', header=None, names=['FID', 'IID', 'label'])
     ref_fam = pd.read_csv(f'{ref}.fam', sep=' ', header=None)
-    ref_labeled = ref_fam.merge(ancestry, how='left', left_on=[0,1], right_on=['FID','IID'])
+    ref_labeled = ref_fam.merge(ancestry, how='left', left_on=[0, 1], right_on=['FID', 'IID'])
 
-    
     pca = pd.read_csv(ref_pca['outpc'], sep='\t')
 
     # combined_labels
-    labeled_pca = pca.merge(ref_labeled, how='left', on=['FID','IID'])
-    labeled_pca.drop(columns=[0,1,2,3,4,5],inplace=True)
+    labeled_pca = pca.merge(ref_labeled, how='left', on=['FID', 'IID'])
+    labeled_pca.drop(columns=[0, 1, 2, 3, 4, 5], inplace=True)
 
     print()
     print()
@@ -249,34 +249,41 @@ def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
     print()
 
     # plot it!
-#     plot_3d(labeled_pca, color='label', title='Reference Panel PCA', plot_out=f'{plot_dir}/plot_ref_pcs', x='PC1', y='PC2', z='PC3')
+    # plot_3d(labeled_pca, color='label', title='Reference Panel PCA',
+    # plot_out=f'{plot_dir}/plot_ref_pcs', x='PC1', y='PC2', z='PC3')
 
     # get reference alleles from ref_common_snps
     ref_common_snps_ref_alleles = f'{ref_common_snps}.ref_allele'
     ref_common_snps_bim = pd.read_csv(f'{ref_common_snps}.bim', header=None, sep='\t')
     ref_common_snps_bim.columns = ['chr', 'rsid', 'kb', 'pos', 'a1', 'a2']
-    ref_common_snps_bim[['rsid','a1']].to_csv(ref_common_snps_ref_alleles, sep='\t', header=False, index=False)
+    ref_common_snps_bim[['rsid', 'a1']].to_csv(ref_common_snps_ref_alleles, sep='\t', header=False, index=False)
     temp_paths['ref_alleles'] = ref_common_snps_ref_alleles
 
     geno_common_snps = f'{out}_common_snps'
     common_snps = f'{ref_common_snps}.common_snps'
     out_paths['common_snps'] = common_snps
 
-    ext_snps_cmd = f'plink --bfile {geno} --extract {common_snps} --reference-allele {ref_common_snps_ref_alleles} --make-bed --out {geno_common_snps}'
+    ext_snps_cmd = f'plink --bfile {geno} \
+    --extract {common_snps} \
+    --reference-allele {ref_common_snps_ref_alleles} \
+    --make-bed --out {geno_common_snps}'
 
     shell_do(ext_snps_cmd)
 
-    print(geno_common_snps, f'{ref_common_snps}.meansd', f'{ref_common_snps}.loadings', f'{geno_common_snps}.projections')
+    print(geno_common_snps, f'{ref_common_snps}.meansd', f'{ref_common_snps}.loadings',
+          f'{geno_common_snps}.projections')
 
     # project new samples onto ref pcs
-    projection = pca_projection(geno_common_snps, f'{ref_common_snps}.meansd', f'{ref_common_snps}.loadings', f'{geno_common_snps}.projections')
+    projection = pca_projection(geno_common_snps, f'{ref_common_snps}.meansd', f'{ref_common_snps}.loadings',
+                                f'{geno_common_snps}.projections')
     out_paths = {**out_paths, **projection}
 
     projected = pd.read_csv(f'{geno_common_snps}.projections', sep='\t')
     projected['label'] = 'new'
     total_pca = labeled_pca.append(projected)
 
-#     plot_3d(total_pca, color='label', title='New Samples Projected on Reference Panel', plot_out=f'{plot_dir}/plot_PCA_projected_new_samples', x='PC1', y='PC2', z='PC3')
+    # plot_3d(total_pca, color='label', title='New Samples Projected on Reference Panel'
+    # plot_out=f'{plot_dir}/plot_PCA_projected_new_samples', x='PC1', y='PC2', z='PC3')
 
     # write output files
     labeled_pca.to_csv(f'{out}_labeled_ref_pca.txt', sep='\t', index=None)
@@ -289,7 +296,7 @@ def calculate_pcs(geno, ref, labels, out, plot_dir, keep_temp=True):
         'new_samples_projected': projected,
         'outpaths': out_paths,
         'temp_paths': temp_paths
-        }
+    }
 
     return out_dict
 
@@ -307,7 +314,7 @@ def munge_training_pca_loadings(labeled_pca):
     X = labeled_pca.drop(columns=['label'])
     y = labeled_pca.label
 
-    #encode labels
+    # encode labels
     le = preprocessing.LabelEncoder()
     y = le.fit_transform(y)
 
@@ -316,8 +323,8 @@ def munge_training_pca_loadings(labeled_pca):
 
     IDs_train = X_train[['FID', 'IID']]
     IDs_test = X_test[['FID', 'IID']]
-    X_train = X_train.drop(columns=['FID','IID'])
-    X_test = X_test.drop(columns=['FID','IID'])
+    X_train = X_train.drop(columns=['FID', 'IID'])
+    X_test = X_test.drop(columns=['FID', 'IID'])
 
     out_dict = {
         'X_train': X_train,
@@ -327,15 +334,14 @@ def munge_training_pca_loadings(labeled_pca):
         'train_ids': IDs_train,
         'test_ids': IDs_test,
         'label_encoder': le,
-        'X_all':X,
-        'y_all':y
-        }
-    
+        'X_all': X,
+        'y_all': y
+    }
+
     return out_dict
 
 
 def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_dir, model_dir, input_param_grid=None):
-    
     """Train UMAP classifier pipeline
     
     
@@ -349,12 +355,12 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
         param_grid = input_param_grid
     else:
         param_grid = {
-        "umap__n_neighbors": [5, 20],
-        "umap__n_components": [15, 25],
-        "umap__a":[0.75, 1.0, 1.5],
-        "umap__b": [0.25, 0.5, 0.75],
-        "svc__C": [10**i for i in range(-3,3)],
-    }
+            "umap__n_neighbors": [5, 20],
+            "umap__n_components": [15, 25],
+            "umap__a": [0.75, 1.0, 1.5],
+            "umap__b": [0.25, 0.5, 0.75],
+            "svc__C": [10 ** i for i in range(-3, 3)],
+        }
 
     le = label_encoder
 
@@ -362,7 +368,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
     umap = UMAP(random_state=123)
     svc = LinearSVC(dual=False, random_state=123)
     pipeline = Pipeline([("umap", umap), ("svc", svc)])
-    
+
     cross_validation = StratifiedKFold(n_splits=5, shuffle=True, random_state=123)
     pipe_grid = GridSearchCV(pipeline, param_grid, cv=cross_validation, scoring='balanced_accuracy')
     pipe_grid.fit(X_train, y_train)
@@ -377,55 +383,54 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
     pipe_clf_pred = pipe_clf.predict(X_test)
 
     pipe_clf_c_matrix = metrics.confusion_matrix(y_test, pipe_clf_pred)
-    
+
     # eventually make this separate function
     # need to get x and y tick labels from 
-#     fig, ax = plt.subplots(figsize=(10,10))
-#     sns.heatmap(pipe_clf_c_matrix, annot=True, fmt='d',
-#                 xticklabels=le.inverse_transform([i for i in range(8)]), yticklabels=le.inverse_transform([i for i in range(8)]))
-#     plt.ylabel('Actual')
-#     plt.xlabel('Predicted')
-#     plt.show()
-#     fig.savefig(f'{plot_dir}/plot_umap_linearsvc_ancestry_conf_matrix.png')
+    #     fig, ax = plt.subplots(figsize=(10,10))
+    #     sns.heatmap(pipe_clf_c_matrix, annot=True, fmt='d',
+    #  xticklabels=le.inverse_transform([i for i in range(8)]), yticklabels=le.inverse_transform([i for i in range(8)]))
+    #     plt.ylabel('Actual')
+    #     plt.xlabel('Predicted')
+    #     plt.show()
+    #     fig.savefig(f'{plot_dir}/plot_umap_linearsvc_ancestry_conf_matrix.png')
 
     # dump best estimator to pkl
     joblib.dump(pipe_clf, f'{model_dir}/umap_linearsvc_ancestry_model.pkl')
 
     out_dict = {
         'classifier': pipe_clf,
-        'label_encoder' : le,
+        'label_encoder': le,
         'best_params': pipe_grid.best_params_,
         'confusion_matrix': pipe_clf_c_matrix,
         'fitted_pipe_grid': pipe_grid,
         'train_accuracy': train_acc,
         'test_accuracy': test_acc
     }
-    
+
     return out_dict
 
 
 def predict_ancestry_from_pcs(projected, pipe_clf, label_encoder, out):
-    
     le = label_encoder
 
     # set new samples aside for labeling after training the model
-    X_new = projected.drop(columns=['FID','IID','label'])
+    X_new = projected.drop(columns=['FID', 'IID', 'label'])
     # X_new_ids = projected[['FID','IID']]
 
     # predict new samples
     y_pred = pipe_clf.predict(X_new)
     # X_new_ids.loc[:,'label'] = le.inverse_transform(ancestry_pred)
     ancestry_pred = le.inverse_transform(y_pred)
-    projected.loc[:,'label'] = ancestry_pred
+    projected.loc[:, 'label'] = ancestry_pred
 
     print()
     print('predicted:\n', projected.label.value_counts())
     print()
 
-    projected[['FID','IID','label']].to_csv(f'{out}_umap_linearsvc_predicted_labels.txt', sep='\t', index=False)
+    projected[['FID', 'IID', 'label']].to_csv(f'{out}_umap_linearsvc_predicted_labels.txt', sep='\t', index=False)
 
     data_out = {
-        'ids': projected.loc[:,['FID','IID','label']],
+        'ids': projected.loc[:, ['FID', 'IID', 'label']],
         'X_new': X_new,
         'y_pred': ancestry_pred,
         'label_encoder': le
@@ -449,13 +454,12 @@ def predict_ancestry_from_pcs(projected, pipe_clf, label_encoder, out):
 
 
 def umap_transform_with_fitted(X_new, X_ref, y_pred, y_ref, label_encoder, fitted_pipe_grid=None):
-    
     le = label_encoder
     pipe_grid = fitted_pipe_grid
     # pipe_clf = pipe_grid.best_estimator_
 
     # X_new = X_new_pred.drop(columns=['FID','IID','label'])
-    X_ = X_ref.drop(columns=['FID','IID'])
+    X_ = X_ref.drop(columns=['FID', 'IID'])
 
     # if fitted_pipe_grid provided, use those params else, use UMAP defaults
     if fitted_pipe_grid:
@@ -466,21 +470,21 @@ def umap_transform_with_fitted(X_new, X_ref, y_pred, y_ref, label_encoder, fitte
         n_neighbors = pipe_grid.best_params_['umap__n_neighbors']
 
         umapper = UMAP(random_state=123, n_components=n_components, n_neighbors=n_neighbors, a=a, b=b).fit(X_)
-    
+
     else:
         umapper = UMAP(random_state=123).fit(X_)
 
     ref_umap = pd.DataFrame(umapper.transform(X_))
-    ref_umap.loc[:,'label'] = le.inverse_transform(y_ref)
+    ref_umap.loc[:, 'label'] = le.inverse_transform(y_ref)
 
     new_samples_umap = pd.DataFrame(umapper.transform(X_new))
     # pred = pipe_clf.predict(X_new)
     # new_samples_umap.loc[:,'label'] = le.inverse_transform(pred)
-    
-    # y_pred_labels = le.inverse_transform(y_pred)
-    new_samples_umap.loc[:,'label'] = y_pred
 
-    ref_umap.loc[:,'dataset'] = 'ref'
+    # y_pred_labels = le.inverse_transform(y_pred)
+    new_samples_umap.loc[:, 'label'] = y_pred
+
+    ref_umap.loc[:, 'dataset'] = 'ref'
     new_samples_umap.loc[:, 'dataset'] = 'predicted'
     total_umap = ref_umap.append(new_samples_umap)
 
@@ -502,7 +506,8 @@ def split_cohort_ancestry(geno_path, labels_path, out_path):
         outname = f'{out_path}_{label}'
         outfiles.append(outname)
         ancestry_group_outpath = f'{outname}.samples'
-        pred_labels[pred_labels.label == label][['FID','IID']].to_csv(ancestry_group_outpath, index=False, header=False, sep='\t')
+        pred_labels[pred_labels.label == label][['FID', 'IID']].to_csv(ancestry_group_outpath, index=False,
+                                                                       header=False, sep='\t')
 
         plink_cmd = f'\
 plink --bfile {geno_path} \
@@ -511,12 +516,12 @@ plink --bfile {geno_path} \
 --out {outname}'
 
         shell_do(plink_cmd)
-    
+
     output_dict = {
         'labels': labels_list,
         'paths': outfiles
     }
-    
+
     return output_dict
 
 
@@ -573,58 +578,58 @@ def run_ancestry(geno_path, out_path, ref_panel, ref_labels, train_param_grid=No
         label_encoder=train_split['label_encoder'],
         fitted_pipe_grid=trained_clf['fitted_pipe_grid']
     )
-    
-#     x_min, x_max = min(umap_transforms['total_umap'].iloc[:,0]), max(umap_transforms['total_umap'].iloc[:,0])
-#     y_min, y_max = min(umap_transforms['total_umap'].iloc[:,1]), max(umap_transforms['total_umap'].iloc[:,1])
-#     z_min, z_max = min(umap_transforms['total_umap'].iloc[:,2]), max(umap_transforms['total_umap'].iloc[:,2])
 
-#     x_range = [x_min-5, x_max+5]
-#     y_range = [y_min-5, y_max+5]
-#     z_range = [z_min-5, z_max+5]
+    #     x_min, x_max = min(umap_transforms['total_umap'].iloc[:,0]), max(umap_transforms['total_umap'].iloc[:,0])
+    #     y_min, y_max = min(umap_transforms['total_umap'].iloc[:,1]), max(umap_transforms['total_umap'].iloc[:,1])
+    #     z_min, z_max = min(umap_transforms['total_umap'].iloc[:,2]), max(umap_transforms['total_umap'].iloc[:,2])
 
-#     plot_3d(
-#         umap_transforms['total_umap'],
-#         color='label',
-#         symbol='dataset',
-#         plot_out=f'{plot_dir}/plot_total_umap',
-#         title='UMAP of New and Reference Samples',
-#         x=0,
-#         y=1,
-#         z=2,
-#         x_range=x_range,
-#         y_range=y_range,
-#         z_range=z_range
-#     )
+    #     x_range = [x_min-5, x_max+5]
+    #     y_range = [y_min-5, y_max+5]
+    #     z_range = [z_min-5, z_max+5]
 
-#     plot_3d(
-#         umap_transforms['ref_umap'],
-#         color='label',
-#         symbol='dataset',
-#         plot_out=f'{plot_dir}/plot_ref_umap',
-#         title="UMAP of Reference Samples",
-#         x=0,
-#         y=1,
-#         z=2,
-#         x_range=x_range,
-#         y_range=y_range,
-#         z_range=z_range
-#     )
+    #     plot_3d(
+    #         umap_transforms['total_umap'],
+    #         color='label',
+    #         symbol='dataset',
+    #         plot_out=f'{plot_dir}/plot_total_umap',
+    #         title='UMAP of New and Reference Samples',
+    #         x=0,
+    #         y=1,
+    #         z=2,
+    #         x_range=x_range,
+    #         y_range=y_range,
+    #         z_range=z_range
+    #     )
 
-#     plot_3d(
-#         umap_transforms['new_samples_umap'],
-#         color='label',
-#         symbol='dataset',
-#         plot_out=f'{plot_dir}/plot_predicted_samples_umap',
-#         title='UMAP of New Samples',
-#         x=0,
-#         y=1,
-#         z=2,
-#         x_range=x_range,
-#         y_range=y_range,
-#         z_range=z_range
-#     )
+    #     plot_3d(
+    #         umap_transforms['ref_umap'],
+    #         color='label',
+    #         symbol='dataset',
+    #         plot_out=f'{plot_dir}/plot_ref_umap',
+    #         title="UMAP of Reference Samples",
+    #         x=0,
+    #         y=1,
+    #         z=2,
+    #         x_range=x_range,
+    #         y_range=y_range,
+    #         z_range=z_range
+    #     )
 
-    # return more stuff as needed but for now, just need predicted labels, predicted labels out path, and predicted counts
+    #     plot_3d(
+    #         umap_transforms['new_samples_umap'],
+    #         color='label',
+    #         symbol='dataset',
+    #         plot_out=f'{plot_dir}/plot_predicted_samples_umap',
+    #         title='UMAP of New Samples',
+    #         x=0,
+    #         y=1,
+    #         z=2,
+    #         x_range=x_range,
+    #         y_range=y_range,
+    #         z_range=z_range
+    #     )
+
+# return more stuff as needed but for now, just need predicted labels, predicted labels out path, and predicted counts
     data_dict = {
         'predict_data': pred['data'],
         'confusion_matrix': trained_clf['confusion_matrix'],
@@ -634,18 +639,18 @@ def run_ancestry(geno_path, out_path, ref_panel, ref_labels, train_param_grid=No
         'ref_umap': umap_transforms['ref_umap'],
         'new_samples_umap': umap_transforms['new_samples_umap'],
         'label_encoder': train_split['label_encoder']
-        }
+    }
 
     metrics_dict = {
         'predicted_counts': pred['metrics'],
         'train_accuracy': trained_clf['train_accuracy'],
         'test_accuracy': trained_clf['test_accuracy']
-        }
+    }
 
     outfiles_dict = {
         'predicted_labels': pred['output']
     }
-    
+
     out_dict = {
         'step': step,
         'data': data_dict,
