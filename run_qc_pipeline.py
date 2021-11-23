@@ -42,6 +42,7 @@ sex = sex_prune(callrate_out, sex_out)
 # run ancestry methods
 ancestry_out = f'{sex_out}_ancestry'
 ancestry = run_ancestry(geno_path=sex_out, out_path=ancestry_out, ref_panel=ref_panel, ref_labels=ref_labels)
+ancestry.to_csv('ancestry_dict.csv')
 
 # get ancestry counts to add to output .h5 later
 ancestry_counts_df = pd.DataFrame(ancestry['metrics']['predicted_counts']).reset_index()
@@ -51,6 +52,7 @@ ancestry_counts_df.columns = ['label', 'count']
 # split cohort into individual ancestry groups
 pred_labels_path = ancestry['output']['predicted_labels']['labels_outpath']
 cohort_split = split_cohort_ancestry(geno_path=sex_out, labels_path=pred_labels_path, out_path=ancestry_out)
+cohort_split.to_csv('cohort_split_dict.csv')
 
 # ancestry-specific pruning steps
 het_dict = dict()
