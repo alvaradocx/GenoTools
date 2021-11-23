@@ -233,7 +233,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         # calculate total estimated memory needed and parts
         max_mem = 1167  # based off of gcta ukbiobank example using 456,426 individuals with extra gb allocation
-        mem = ((n * (n + 1) / 2 * 12) / 1024 ** 3 + 0.5) + buffer  # gcta estimated memory formula; output = GB where buffer is allocating extra gb
+        mem = ((n * (n + 1) / 2 * 12) / 1024 ** 3 + 0.5) + buffer  # gcta estimated memory formula; output = GB
         if mem <= max_mem:
             part = 250  # mb per part
         else:
@@ -243,9 +243,10 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = []
         for i in range(1, part + 1):
-            gcta_cmd1.append("gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3}".format(geno_path,
-                                                                                                             part, i,
-                                                                                                             grm1))
+            gcta_cmd1.append(
+                "gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3}".format(geno_path,
+                                                                                                  part, i,
+                                                                                                  grm1))
 
         # merge
         grm1_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm1, part, grm1)
@@ -256,8 +257,8 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         gcta_cmd2 = []
         for i in range(1, part + 1):
             gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
-                                                                                                      related_grm_cutoff,
-                                                                                                      part, i, grm2))
+                                                                                                        related_grm_cutoff,
+                                                                                                        part, i, grm2))
 
         # merge
         grm2_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm2, part, grm2)
@@ -268,8 +269,8 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         gcta_cmd3 = []
         for i in range(1, part + 1):
             gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4}".format(grm1,
-                                                                                                      duplicated_grm_cutoff,
-                                                                                                      part, i, grm3))
+                                                                                                        duplicated_grm_cutoff,
+                                                                                                        part, i, grm3))
 
         # merge
         grm3_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm3, part, grm3)
@@ -292,7 +293,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
                 grm3_bin, grm3_nbin, plink_cmd1]
         cmd_len = len(cmds)
 
-        for i in range(0,cmd_len):
+        for i in range(0, cmd_len):
             if isinstance(cmds[i], str):
                 shell_do(cmd, make_part=True)
             else:
