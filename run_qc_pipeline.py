@@ -3,6 +3,7 @@ import argparse
 import shutil
 import os
 import subprocess
+import csv
 
 # local imports
 from QC.qc import callrate_prune, het_prune, sex_prune, related_prune, variant_prune, avg_miss_rates
@@ -42,17 +43,25 @@ sex = sex_prune(callrate_out, sex_out)
 # run ancestry methods
 ancestry_out = f'{sex_out}_ancestry'
 ancestry = run_ancestry(geno_path=sex_out, out_path=ancestry_out, ref_panel=ref_panel, ref_labels=ref_labels)
-ancestry.to_csv('ancestry_dict.csv')
+
+# write out to file just in case
+w = csv.writer(open('ancestry_dict.csv', 'w'))
+for key, val in ancestry.items():
+    w.writerow([key, val])
 
 # get ancestry counts to add to output .h5 later
 ancestry_counts_df = pd.DataFrame(ancestry['metrics']['predicted_counts']).reset_index()
 ancestry_counts_df.columns = ['label', 'count']
 
-
 # split cohort into individual ancestry groups
 pred_labels_path = ancestry['output']['predicted_labels']['labels_outpath']
 cohort_split = split_cohort_ancestry(geno_path=sex_out, labels_path=pred_labels_path, out_path=ancestry_out)
-cohort_split.to_csv('cohort_split_dict.csv')
+
+# write out to file just in case
+w = csv.writer(open('cohort_split_dict.csv', 'w'))
+for key, val in cohort_split.items():
+    w.writerow([key, val])
+
 
 # ancestry-specific pruning steps
 het_dict = dict()
