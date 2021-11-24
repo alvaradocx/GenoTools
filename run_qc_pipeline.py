@@ -51,7 +51,7 @@ ancestry_out = f'{sex_out}_ancestry'
 ancestry = run_ancestry(geno_path=sex_out, out_path=ancestry_out, ref_panel=ref_panel, ref_labels=ref_labels)
 
 # write out to file just in case
-with open('ancestry_dict.json', 'w') as outfile:
+with open(f'{out_path}/ancestry_dict.json', 'w') as outfile:
     json.dump(ancestry, outfile)
 
 # get ancestry counts to add to output .h5 later
@@ -63,7 +63,7 @@ pred_labels_path = ancestry['output']['predicted_labels']['labels_outpath']
 cohort_split = split_cohort_ancestry(geno_path=sex_out, labels_path=pred_labels_path, out_path=ancestry_out)
 
 # write out to file just in case
-with open('cohort_split_dict.json', 'w') as outfile:
+with open(f'{out_path}/cohort_split_dict.json', 'w') as outfile:
     json.dump(cohort_split, outfile)
 
 # ancestry-specific pruning steps
