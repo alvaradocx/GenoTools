@@ -31,9 +31,6 @@ out_path = args.out
 fam_df = pd.read_csv(f'{geno_path}.fam', sep='\s+', header=None)
 n = fam_df.shape[0]
 
-# change working directory to output folder
-os.chdir(out_path)
-
 # sample-level pruning and metrics
 missing_path = f'{geno_path}_missing'
 avg_miss = avg_miss_rates(geno_path, missing_path)
