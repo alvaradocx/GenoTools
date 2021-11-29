@@ -298,7 +298,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
                 shell_do(cmds[i], make_part=True)
             else:
                 for sub in cmds[i]:
-                    shell_do(sub, make_part=True)
+                    shell_do(sub)
     else:
         # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm  --out {grm1}"
