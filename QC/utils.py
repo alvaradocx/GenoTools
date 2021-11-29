@@ -13,7 +13,7 @@ def shell_do(command, log=False, return_log=False, make_part = False):
     if make_part == False:
         res = subprocess.run(command.split(), stdout=subprocess.PIPE)
     else:
-        res = subprocess.run(command.split(), shell = True, stdout=subprocess.PIPE)
+        res = subprocess.run(command, shell = True, stdout=subprocess.PIPE)
 
     if log:
         print(res.stdout.decode('utf-8'))
