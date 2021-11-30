@@ -259,7 +259,8 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds1[i], str):
-                shell_do(cmds1[i], make_part=True)
+                args = shlex.split(cmds1[i])
+                shell_do(args, make_part=True)
             else:
                 for sub in cmds1[i]:
                     shell_do(sub)
@@ -282,7 +283,8 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds2[i], str):
-                shell_do(cmds2[i], make_part=True)
+                args = shlex.split(cmds2[i])
+                shell_do(args, make_part=True)
             else:
                 for sub in cmds2[i]:
                     shell_do(sub)
@@ -305,7 +307,8 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds3[i], str):
-                shell_do(cmds3[i], make_part=True)
+                args = shlex.split(cmds3[i])
+                shell_do(args, make_part=True)
             else:
                 for sub in cmds3[i]:
                     shell_do(sub)
@@ -324,7 +327,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         # execute plink cmd
         shell_do(plink_cmd1)
-        
+
     else:
         # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm  --out {grm1}"
