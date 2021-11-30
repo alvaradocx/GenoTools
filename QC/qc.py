@@ -253,6 +253,17 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         grm1_bin = "cat {}.part_{}_*.grm.bin > {}.grm.bin".format(grm1, part, grm1)
         grm1_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm1, part, grm1)
 
+        # run shell_do
+        cmds1 = [gcta_cmd1, grm1_id, grm1_bin, grm1_nbin]
+        cmd_len = len(cmds1)
+
+        for i in range(0, cmd_len):
+            if isinstance(cmds1[i], str):
+                shell_do(cmds1[i], make_part=True)
+            else:
+                for sub in cmds1[i]:
+                    shell_do(sub)
+
         # see if any samples are related (includes duplicates)
         gcta_cmd2 = []
         for i in range(1, part + 1):
@@ -264,6 +275,17 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         grm2_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm2, part, grm2)
         grm2_bin = "cat {}.part_{}_*.grm.bin > {}.grm.bin".format(grm2, part, grm2)
         grm2_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm2, part, grm2)
+
+        # run shell_do
+        cmds2 = [gcta_cmd2, grm2_id, grm2_bin, grm2_nbin]
+        cmd_len = len(cmds2)
+
+        for i in range(0, cmd_len):
+            if isinstance(cmds2[i], str):
+                shell_do(cmds2[i], make_part=True)
+            else:
+                for sub in cmds2[i]:
+                    shell_do(sub)
 
         # see if any samples are duplicated (grm cutoff >= 0.95)
         gcta_cmd3 = []
@@ -277,6 +299,17 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         grm3_bin = "cat {}.part_{}_*.grm.bin > {}.grm.bin".format(grm3, part, grm3)
         grm3_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm3, part, grm3)
 
+        # run shell_do
+        cmds3 = [gcta_cmd3, grm3_id, grm3_bin, grm3_nbin]
+        cmd_len = len(cmds3)
+
+        for i in range(0, cmd_len):
+            if isinstance(cmds3[i], str):
+                shell_do(cmds3[i], make_part=True)
+            else:
+                for sub in cmds3[i]:
+                    shell_do(sub)
+
         if prune_related and prune_duplicated:
             plink_cmd1 = f"plink --bfile {geno_path} --keep {grm2}.grm.id --make-bed --out {out_path}"
 
@@ -289,16 +322,9 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         if not prune_duplicated and prune_related:
             print('This option is invalid. Cannot prune related without also pruning duplicated')
 
-        cmds = [gcta_cmd1, grm1_id, grm1_bin, grm1_nbin, gcta_cmd2, grm2_id, grm2_bin, grm2_nbin, gcta_cmd3, grm3_id,
-                grm3_bin, grm3_nbin, plink_cmd1]
-        cmd_len = len(cmds)
-
-        for i in range(0, cmd_len):
-            if isinstance(cmds[i], str):
-                shell_do(cmds[i], make_part=True)
-            else:
-                for sub in cmds[i]:
-                    shell_do(sub)
+        # execute plink cmd
+        shell_do(plink_cmd1)
+        
     else:
         # calculate grm and select relatedness <= grm_cutoff
         gcta_cmd1 = f"gcta --bfile {geno_path} --autosome --maf 0.05 --make-grm  --out {grm1}"
