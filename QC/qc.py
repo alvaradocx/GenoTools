@@ -5,6 +5,7 @@ import os
 import glob
 import shutil
 import sys
+import shlex
 
 # local imports
 from QC.utils import shell_do, rm_tmps, count_file_lines
