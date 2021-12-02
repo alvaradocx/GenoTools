@@ -59,11 +59,6 @@ het_dict = dict()
 related_dict = dict()
 variant_dict = dict()
 
-# create out export
-c_split = cohort_split[['paths','labels']]
-
-c_split.to_csv('cohort_split.csv')
-
 for geno, label in zip(cohort_split['paths'], cohort_split['labels']):
 
     # related
