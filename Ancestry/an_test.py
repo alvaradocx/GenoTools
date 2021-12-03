@@ -362,7 +362,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
             "rf_max_depth": [5, 10, 15],
             "rf_min_sample_split": [25, 30, 50, 75],
             "rf_max_terminal_nodes": [10, 20, 40],
-            "ref_n_estimators": [25, 50, 75]
+            "rf_n_estimators": [25, 50, 75]
 
         }
 
