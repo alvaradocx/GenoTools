@@ -8,8 +8,7 @@ import shutil
 import pandas as pd
 
 def shell_do(command, log=False, return_log=False, make_part = False):
-    print(f'Executing: {(" ").join(command.split())}', file=sys.stderr)
-
+    print(f'Executing: {command}')
     if make_part == False:
         res = subprocess.run(command.split(), stdout=subprocess.PIPE)
     else:
