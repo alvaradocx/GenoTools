@@ -12,7 +12,7 @@ from umap import UMAP
 from sklearn import preprocessing, metrics
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 import plotly.express as px
 import plotly
 import joblib
@@ -359,7 +359,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
             "umap__n_components": [15, 25],
             "umap__a": [0.75, 1.0, 1.5],
             "umap__b": [0.25, 0.5, 0.75],
-            "rf__n_estimators": [10, 25, 50, 75]
+            "lg__solver":['saga','newton-cg']
 
         }
 
@@ -367,8 +367,8 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
 
     # Transformation with UMAP followed by classification with rf
     umap = UMAP(random_state=123)
-    rf = RandomForestClassifier(random_state=123)
-    pipeline = Pipeline([("umap", umap), ("rf", rf)])
+    lg = LogisticRegression(dual=False, random_state=123)
+    pipeline = Pipeline([("umap", umap), ("lg", lg)])
 
     cross_validation = StratifiedKFold(n_splits=5, shuffle=True, random_state=123)
     pipe_grid = GridSearchCV(pipeline, param_grid, cv=cross_validation, scoring='balanced_accuracy')
