@@ -245,7 +245,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         gcta_cmd1 = []
         for i in range(1, part + 1):
             gcta_cmd1.append(
-                "gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3} --thread-num 20".format(geno_path,
+                "gcta --bfile {0} --autosome --maf 0.05 --make-grm-part {1} {2} --out {3} --thread-num 25".format(geno_path,
                                                                                                   part, i,
                                                                                                   grm1))
 
@@ -260,8 +260,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds1[i], str):
-                args = shlex.split(cmds1[i])
-                shell_do(args, make_part=True)
+                shell_do(cmds1[i], make_part=True)
             else:
                 for sub in cmds1[i]:
                     shell_do(sub)
@@ -269,7 +268,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are related (includes duplicates)
         gcta_cmd2 = []
         for i in range(1, part + 1):
-            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 20".format(grm1,
+            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 25".format(grm1,
                                                                                                         related_grm_cutoff,
                                                                                                         part, i, grm2))
 
@@ -293,7 +292,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are duplicated (grm cutoff >= 0.95)
         gcta_cmd3 = []
         for i in range(1, part + 1):
-            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 20".format(grm1,
+            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 25".format(grm1,
                                                                                                         duplicated_grm_cutoff,
                                                                                                         part, i, grm3))
 
