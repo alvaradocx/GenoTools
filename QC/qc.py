@@ -283,8 +283,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds2[i], str):
-                args = shlex.split(cmds2[i])
-                shell_do(args, make_part=True)
+                shell_do(cmds2[i], make_part=True)
             else:
                 for sub in cmds2[i]:
                     shell_do(sub)
@@ -307,8 +306,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         for i in range(0, cmd_len):
             if isinstance(cmds3[i], str):
-                args = shlex.split(cmds3[i])
-                shell_do(args, make_part=True)
+                shell_do(cmds3[i], make_part=True)
             else:
                 for sub in cmds3[i]:
                     shell_do(sub)
