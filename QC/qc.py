@@ -268,7 +268,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are related (includes duplicates)
         gcta_cmd2 = []
         for i in range(1, part + 1):
-            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 25".format(grm1,
+            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 21".format(grm1,
                                                                                                         related_grm_cutoff,
                                                                                                         part, i, grm2))
 
@@ -291,7 +291,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are duplicated (grm cutoff >= 0.95)
         gcta_cmd3 = []
         for i in range(1, part + 1):
-            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 25".format(grm1,
+            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num 21".format(grm1,
                                                                                                         duplicated_grm_cutoff,
                                                                                                         part, i, grm3))
 
