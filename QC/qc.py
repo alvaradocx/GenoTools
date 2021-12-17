@@ -215,7 +215,7 @@ def het_prune(geno_path, out_path):
 
 
 def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_cutoff=0.95, prune_related=True,
-                  prune_duplicated=True, n=200000, buffer=2):
+                  prune_duplicated=True, n=200000, buffer = 0):
     # what step are we running?
     step = "related_prune"
     print()
