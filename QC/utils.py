@@ -7,17 +7,19 @@ import os
 import shutil
 import pandas as pd
 
-def shell_do(command, log=False, return_log=False, make_part = False):
-    print(f'Executing: {command}')
+
+def shell_do(command, log=False, return_log=False, make_part=False):
+    print(f'Executing: {(" ").join(command.split())}', file=sys.stderr)
+
     if make_part == False:
         res = subprocess.run(command.split(), stdout=subprocess.PIPE)
     else:
-        res = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        res = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
 
     if log:
         print(res.stdout.decode('utf-8'))
     if return_log:
-        return(res.stdout.decode('utf-8'))
+        return (res.stdout.decode('utf-8'))
     
 
 def merge_genos(geno_path1, geno_path2, out_name):

@@ -266,7 +266,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         for i in range(0, cmd_len):
             if isinstance(cmds1[i], str):
                 shell_do(cmds1[i], make_part=True)
-            else:
+            elif isinstance(cmds1[i], list):
                 for sub in cmds1[i]:
                     shell_do(sub)
 
@@ -290,7 +290,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         for i in range(0, cmd_len):
             if isinstance(cmds2[i], str):
                 shell_do(cmds2[i], make_part=True)
-            else:
+            elif isinstance(cmds2[i], list):
                 for sub in cmds2[i]:
                     shell_do(sub)
 
@@ -314,7 +314,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         for i in range(0, cmd_len):
             if isinstance(cmds3[i], str):
                 shell_do(cmds3[i], make_part=True)
-            else:
+            elif isinstance(cmds3[i], list):
                 for sub in cmds3[i]:
                     shell_do(sub)
 
