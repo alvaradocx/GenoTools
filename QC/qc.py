@@ -238,7 +238,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         pheno_file = f'{geno_path}_pheno.phen'
         
         if n >= 400000:
-            thread = 19
+            thread = 20
         else:
             thread = 10
 
