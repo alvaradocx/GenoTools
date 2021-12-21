@@ -231,9 +231,14 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     grm3 = f"{out_path}_duplicated_grm"
 
     if n >= 200000:
+
+        fam_df = pd.read_csv(f'{geno_path}.fam', header = None, delimiter = ' ')
+        fam_df = fam_df[[0,1,5]]
+        fam_df.to_csv(f'{geno_path}_pheno.phen', header = None, sep = ' ')
+        pheno_file = f'{geno_path}_pheno.phen'
         
         if n >= 400000:
-            thread = 20
+            thread = 19
         else:
             thread = 10
 
@@ -273,9 +278,9 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are related (includes duplicates)
         gcta_cmd2 = []
         for i in range(1, part + 1):
-            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num {5}".format(grm1,
+            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --pheno {4} --out {5} --thread-num {6}".format(grm1,
                                                                                                         related_grm_cutoff,
-                                                                                                        part, i, grm2,
+                                                                                                        part, i, pheno_file, grm2,
                                                                                                         thread))
 
         # merge
@@ -297,9 +302,9 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         # see if any samples are duplicated (grm cutoff >= 0.95)
         gcta_cmd3 = []
         for i in range(1, part + 1):
-            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --out {4} --thread-num {5}".format(grm1,
+            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --pheno {4} --out {5} --thread-num {6}".format(grm1,
                                                                                                         duplicated_grm_cutoff,
-                                                                                                        part, i, grm3,
+                                                                                                        part, i, pheno_file, grm3,
                                                                                                         thread))
 
         # merge
