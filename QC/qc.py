@@ -463,7 +463,7 @@ def variant_prune(geno_path, out_path):
 
     fam = pd.read_csv(f'{geno_path}.fam', sep='\s+', header=None, usecols=[5], names=['case'])
     # check if this contains both cases and controls
-    if all(x in fam['case'].unique() for x in [1, 2]):
+    if all(x in fam['case'].unique() for x in [1, 2, -9]):
         # missingness by case control (--test-missing), using P > 1E-4
         plink_cmd2 = f"plink --bfile {geno_tmp1} --test-missing --out {mis_tmp1}"
         shell_do(plink_cmd2)
