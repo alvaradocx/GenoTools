@@ -344,7 +344,7 @@ def munge_training_pca_loadings(labeled_pca):
     return out_dict
 
 
-def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_dir, model_dir, input_param_grid=None, model = Linsvc):
+def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_dir, model_dir, input_param_grid=None, model = 'linsvc'):
     """Train UMAP classifier pipeline
     """
     step = "train_umap_classifier"
@@ -352,7 +352,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
     print(f"RUNNING: {step}")
     print()
 
-    if model == logreg:
+    if model == 'logreg':
         if input_param_grid:
             param_grid = input_param_grid
         else:
@@ -372,7 +372,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
         lg = LogisticRegression(dual=False, random_state=123)
         pipeline = Pipeline([("umap", umap), ("lg", lg)])
 
-    elif model == randomforest:
+    elif model == 'randomforest':
         if input_param_grid:
             param_grid = input_param_grid
         else:
