@@ -231,11 +231,9 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
     grm3 = f"{out_path}_duplicated_grm"
 
     if n >= 200000:
-
-        fam_df = pd.read_csv(f'{geno_path}.fam', header = None, delimiter = ' ')
-        fam_df = fam_df[[0,1,5]]
-        fam_df.to_csv(f'{geno_path}_pheno.phen', header = None, index = False, sep = ' ')
-        pheno_file = f'{geno_path}_pheno.phen'
+        plink_pheno = f"cut -f 1,2,6 -d ' ' {geno_path}.fam > {geno_path}_pheno.txt"
+        shell_do(plink_pheno)
+        pheno_file = f'{geno_path}_pheno.txt'
         
         if n >= 400000:
             thread = 20
