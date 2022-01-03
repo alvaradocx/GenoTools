@@ -274,52 +274,16 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
                     shell_do(sub)
 
         # see if any samples are related (includes duplicates)
-        gcta_cmd2 = []
-        for i in range(1, part + 1):
-            gcta_cmd2.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --pheno {4} --out {5} --thread-num {6}".format(grm1,
-                                                                                                        related_grm_cutoff,
-                                                                                                        part, i, pheno_file, grm2,
-                                                                                                        thread))
-
-        # merge
-        grm2_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm2, part, grm2)
-        grm2_bin = "cat {}.part_{}_*.grm.bin > {}.grm.bin".format(grm2, part, grm2)
-        grm2_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm2, part, grm2)
+        gcta_cmd2 = "gcta --grm-cutoff {0} --grm {1} --out {2} --make-grm ".format(related_grm_cutoff, grm1, grm2)
 
         # run shell_do
-        cmds2 = [gcta_cmd2, grm2_id, grm2_bin, grm2_nbin]
-        cmd_len = len(cmds2)
-
-        for i in range(0, cmd_len):
-            if isinstance(cmds2[i], str):
-                shell_do(cmds2[i], make_part=True)
-            elif isinstance(cmds2[i], list):
-                for sub in cmds2[i]:
-                    shell_do(sub)
+        shell_do(gcta_cmd2)
 
         # see if any samples are duplicated (grm cutoff >= 0.95)
-        gcta_cmd3 = []
-        for i in range(1, part + 1):
-            gcta_cmd3.append("gcta --grm {0} --grm-cutoff {1} --make-grm-part {2} {3} --pheno {4} --out {5} --thread-num {6}".format(grm1,
-                                                                                                        duplicated_grm_cutoff,
-                                                                                                        part, i, pheno_file, grm3,
-                                                                                                        thread))
-
-        # merge
-        grm3_id = "cat {}.part_{}_*.grm.id > {}.grm.id".format(grm3, part, grm3)
-        grm3_bin = "cat {}.part_{}_*.grm.bin > {}.grm.bin".format(grm3, part, grm3)
-        grm3_nbin = "cat {}.part_{}_*.grm.N.bin > {}.grm.N.bin".format(grm3, part, grm3)
+        gcta_cmd3 = "gcta --grm-cutoff {0} --grm {1} --out {2} --make-grm ".format(duplicated_grm_cutoff_grm_cutoff, grm1, grm3)
 
         # run shell_do
-        cmds3 = [gcta_cmd3, grm3_id, grm3_bin, grm3_nbin]
-        cmd_len = len(cmds3)
-
-        for i in range(0, cmd_len):
-            if isinstance(cmds3[i], str):
-                shell_do(cmds3[i], make_part=True)
-            elif isinstance(cmds3[i], list):
-                for sub in cmds3[i]:
-                    shell_do(sub)
+        shell_do(gcta_cmd3)
 
         if prune_related and prune_duplicated:
             plink_cmd1 = f"plink --bfile {geno_path} --keep {grm2}.grm.id --make-bed --out {out_path}"
@@ -461,7 +425,7 @@ def variant_prune(geno_path, out_path):
 
     fam = pd.read_csv(f'{geno_path}.fam', sep='\s+', header=None, usecols=[5], names=['case'])
     # check if this contains both cases and controls
-    if all(x in fam['case'].unique() for x in [1, 2, -9]):
+    if all(x in fam['case'].unique() for x in [1, 2]):
         # missingness by case control (--test-missing), using P > 1E-4
         plink_cmd2 = f"plink --bfile {geno_tmp1} --test-missing --out {mis_tmp1}"
         shell_do(plink_cmd2)
