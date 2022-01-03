@@ -367,7 +367,7 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
 
     # Transformation with UMAP followed by classification with rf
     umap = UMAP(random_state=123)
-    lg = LogisticRegression(dual=False, random_state=123)
+    lg = LogisticRegression(dual=False, random_state=123, warm_start = True)
     pipeline = Pipeline([("umap", umap), ("lg", lg)])
 
     cross_validation = StratifiedKFold(n_splits=5, shuffle=True, random_state=123)
