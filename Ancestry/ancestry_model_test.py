@@ -449,11 +449,6 @@ def train_umap_classifier(X_train, X_test, y_train, y_test, label_encoder, plot_
         'test_accuracy': test_acc
     }
 
-    out_dict_json = json.dumps(out_dict)
-    f = open(f'{model}_model_score.json','w')
-    f.write(out_dict_json)
-    f.close()
-
     return out_dict
 
 
