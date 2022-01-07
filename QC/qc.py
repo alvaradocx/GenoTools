@@ -280,7 +280,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
         shell_do(gcta_cmd2)
 
         # see if any samples are duplicated (grm cutoff >= 0.95)
-        gcta_cmd3 = "gcta --grm-cutoff {0} --grm {1} --out {2} --make-grm ".format(duplicated_grm_cutoff_grm_cutoff, grm1, grm3)
+        gcta_cmd3 = "gcta --grm-cutoff {0} --grm {1} --out {2} --make-grm ".format(duplicated_grm_cutoff, grm1, grm3)
 
         # run shell_do
         shell_do(gcta_cmd3)
