@@ -322,7 +322,7 @@ def related_prune(geno_path, out_path, related_grm_cutoff=0.125, duplicated_grm_
 
         cmds = [gcta_cmd1, gcta_cmd2, gcta_cmd3, plink_cmd1]
         for cmd in cmds:
-            shell_do(cmd, split=False)
+            shell_do(cmd)
 
     # get sample counts
     total_count = sum(1 for line in open(f'{geno_path}.fam'))
